@@ -1,0 +1,133 @@
+<html>
+<head>
+
+<script src="jsapi.js" type="text/javascript"></script>
+<script src="jquery.min.js" type="text/javascript"></script>
+
+ 
+<script type="text/javascript">
+
+
+google.load("visualization", "1", {packages:["corechart"]});
+google.setOnLoadCallback(drawChart);
+
+
+function drawChart() {
+
+
+ 
+
+
+$.get("https://en.wikipedia.org/wiki/List_of_states_and_union_territories_of_India_by_population", function(htmltb) {
+var states = [];
+var pop = []; 
+var India;   
+var data = new google.visualization.DataTable();
+    data.addColumn('string', 'Region');
+    data.addColumn('number', 'Population');
+           
+var $elem = $('<table class=\"wikitable sortable\">').html(htmltb);
+
+$elem.find('tr').each(function (i) {
+
+        var $tds = $(this).find('td');
+//alert("row no:"+i + " State :"+$tds.eq(1).text());
+if(i>4 && i<41)
+{
+var state = $tds.eq(1).text();
+states.push($tds.eq(1).text());
+var spade = $tds.eq(2).html();
+
+var cut = String(spade);
+
+cut = cut.replace("</span>","+");
+cut = cut.substring(cut.indexOf("+"));
+cut = cut.substring(cut.indexOf("+")+1,cut.indexOf("<"));
+cut = cut.replace(/,/g,"");
+pop.push(cut);
+data.addRow([state,parseInt(cut)]);
+}
+else if(i==41)
+India = $tds.eq(1).text() +" - Total Popolation as per census data 2011 :"+$tds.eq(2).text();
+
+            });
+//alert(states);
+//alert(pop);
+alert(India);
+var pieoptions={
+        title: India,
+        pieHole: 0.3,
+
+      };
+var chart = new google.visualization.PieChart(document.getElementById('chart_div'));             
+chart.draw(data, pieoptions);
+
+$('#ddl_Chart').change(function() 
+{
+var valu=$('#ddl_Chart').val();
+if(valu=='2')
+{
+var options = {
+        title: India,
+        bar: {groupWidth: "95%"},
+
+      };
+var chart = new google.visualization.BarChart(document.getElementById('chart_div'));             
+chart.draw(data, options);
+}
+else if(valu=='3')
+{
+var options = {
+        title: India,
+
+
+      };
+var chart = new google.visualization.LineChart(document.getElementById('chart_div'));             
+chart.draw(data, options);
+}
+else
+{
+var options = {
+        title: India,
+        pieHole: 0.3,
+
+      };
+var chart = new google.visualization.PieChart(document.getElementById('chart_div'));             
+chart.draw(data, options);
+}
+    
+  });
+
+
+
+
+
+
+        });
+ 
+       }
+
+  
+    
+
+
+
+
+
+
+
+
+
+</script>
+</head>
+<body>Select your Chart type :
+<select id="ddl_Chart">
+<option selected="selected" value="1">Pie Chart</option>
+<option value="2">Bar Chart</option>
+<option value="3">Line Chart</option>
+</select>
+<div id="chart_div" style="width: 900px; height: 900px;">
+</div>
+<table id="td_pop"><tr></tr></table>
+</body>
+</html>
